@@ -1,54 +1,77 @@
 <DOCTYPE html>
-	<html>
-	<head>
+    <html>
 
-			<script
-			  src="https://code.jquery.com/jquery-3.6.0.min.js"
-			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-			  crossorigin="anonymous"></script>
+    <head>
 
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-   crossorigin=""/>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-    <!-- Make sure you put this AFTER Leaflet's CSS -->
- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-   crossorigin=""></script>
-	</head>
-	<body>
-		<div id="map" style="width:1000px; height:800px">
-			</div>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+            integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+            crossorigin="" />
 
+        <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    </head>
 
-			<script>
-				console.log("running");
-				var map = L.map('map').setView([53.2, -7.5], 13);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-L.marker([53.2, -7.5]).addTo(map)
-    .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-    .openPopup();
+    <body>
+        <div id="map" style="width:1000px; height:800px">
+        </div>
 
 
-$.getJSON("https://gist.githubusercontent.com/CalRobert/edd02cb4d8edf5e00fd851ce1d30d9aa/raw/3f4f3018e3d298dd000e25abad3b5dfec0a3c39a/map.geojson", function(data) {
-
-        L.geoJSON(data, {
-    style: function (feature) {
-        return {color: "#00FF00"};
-    }
-}).bindPopup(function (layer) {
-    return layer.feature.properties.notes;
-}).addTo(map);
-});
+        <script>
 
 
+            const getUrlParameter = function getUrlParameter(sParam) {
+                var sPageURL = window.location.search.substring(1),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                    }
+                }
+                return false;
+            };
+
+            // const getMapRect = () => {};
+
+            const geoJSONSourceUrl = getUrlParameter('geoJSONSourceURL');
+
+            var map = L.map('map').setView([53.2, -7.5], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.marker([53.2, -7.5]).addTo(map)
+                .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+                .openPopup();
+
+
+            // $.getJSON("https://gist.githubusercontent.com/CalRobert/edd02cb4d8edf5e00fd851ce1d30d9aa/raw/3f4f3018e3d298dd000e25abad3b5dfec0a3c39a/map.geojson", function (data) {
+            $.getJSON(geoJSONSourceUrl, function (data) {
+
+                L.geoJSON(data, {
+                    style: function (feature) {
+                        return { color: "#00FF00" };
+                    }
+                }).bindPopup(function (layer) {
+                    return layer.feature.properties.notes;
+                }).addTo(map);
+            });
 
 
 
-</script>
-	</body>
-	</html>
+
+
+        </script>
+    </body>
+
+    </html>
