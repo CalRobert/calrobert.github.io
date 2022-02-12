@@ -22,7 +22,7 @@ TrelloPowerUp.initialize({
         title: "Geojson map",
         content: {
             type: 'iframe',
-            url: t.signUrl('/geojson.html', {
+            url: t.signUrl('/geojson.html?geoJSONSourceURL=' + claimed[0].url, {
               geoJSONSourceURL: claimed[0].url
             }),
             height: 600
