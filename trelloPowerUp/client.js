@@ -14,7 +14,7 @@ TrelloPowerUp.initialize({
     });
 
 
-    return [
+    let answer = [
       {
         id: "Yellowstone", // optional if you aren't using a function for the title
         claimed: claimed,
@@ -30,5 +30,6 @@ TrelloPowerUp.initialize({
         }
       },
     ];
+    return anaswer;
   },
 });
