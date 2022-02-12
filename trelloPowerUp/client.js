@@ -30,6 +30,6 @@ TrelloPowerUp.initialize({
         }
       },
     ];
-    return anaswer;
+    return answer;
   },
 });
