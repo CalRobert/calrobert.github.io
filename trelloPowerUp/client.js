@@ -21,15 +21,12 @@ TrelloPowerUp.initialize({
         icon: GRAY_ICON, // Must be a gray icon, colored icons not allowed.
         title: "Geojson map",
         content: {
-          type: "iframe",
-          // url: t.signUrl("./index.html", {
-          url: "/geojson.html?geoJSONSourceURL=" + claimed[0].url
-          //                , {
-          //   arg: "you can pass your section args here",
-          // }
-                        ,
-          height: 730,
-        },
+            type: 'iframe',
+            url: t.signUrl('/geojson.html', {
+              geoJSONSourceURL: claimed[0].url
+            }),
+            height: 600
+        }
       },
     ];
   },
