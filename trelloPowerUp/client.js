@@ -23,7 +23,7 @@ TrelloPowerUp.initialize({
         content: {
             type: 'iframe',
             // url: 'https://calrobert.github.io/geojson.html?geoJSONSourceURL=https://gist.githubusercontent.com/CalRobert/edd02cb4d8edf5e00fd851ce1d30d9aa/raw/3f4f3018e3d298dd000e25abad3b5dfec0a3c39a/map.geojson',
-            url: t.signUrl('/geojson.html', {
+            url: t.signUrl('https://calrobert.github.io/geojson.html', {
               geoJSONSourceURL: claimed[0].url
             }),
             height: 600
