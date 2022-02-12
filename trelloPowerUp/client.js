@@ -19,13 +19,13 @@ TrelloPowerUp.initialize({
         id: "Yellowstone", // optional if you aren't using a function for the title
         claimed: claimed,
         icon: GRAY_ICON, // Must be a gray icon, colored icons not allowed.
-        title: "Geojson map3",
+        title: "Geojson map4",
         content: {
             type: 'iframe',
-            // url: 'https://calrobert.github.io/geojson.html?geoJSONSourceURL=https://gist.githubusercontent.com/CalRobert/edd02cb4d8edf5e00fd851ce1d30d9aa/raw/3f4f3018e3d298dd000e25abad3b5dfec0a3c39a/map.geojson',
-            url: t.signUrl('https://calrobert.github.io/geojson.html', {
-              geoJSONSourceURL: claimed[0].url
-            }),
+            url: `https://calrobert.github.io/geojson.html?geoJSONSourceURL=claimed[0].url`,
+            // url: t.signUrl('https://calrobert.github.io/geojson.html', {
+            //   geoJSONSourceURL: claimed[0].url
+            // }),
             height: 600
         }
       },
