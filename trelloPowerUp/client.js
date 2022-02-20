@@ -16,10 +16,10 @@ TrelloPowerUp.initialize({
 
     let answer = [
       {
-        id: "Yellowstone", // optional if you aren't using a function for the title
+        // id: "Yellowstone", // optional if you aren't using a function for the title
         claimed: claimed,
         icon: GRAY_ICON, // Must be a gray icon, colored icons not allowed.
-        title: "Geojson map4",
+        title: "Geojson->Map",
         content: {
             type: 'iframe',
             url: `https://calrobert.github.io/geojson.html?geoJSONSourceURL=${claimed[0].url}`,
