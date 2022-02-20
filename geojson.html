@@ -3,6 +3,8 @@
 
     <head>
 
+        <script src="/outTurf.js">
+        </script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
@@ -23,6 +25,13 @@
 
         <script>
 
+
+            // const getBoundingBox = () => {
+            //     var line = turf.lineString([[-74, 40], [-78, 42], [-82, 35]]);
+            //     var bbox = turf.bbox(line);
+            //     var bboxPolygon = turf.bboxPolygon(bbox);
+            //     console.log(bboxPolygon);
+            // };
 
             const getUrlParameter = function getUrlParameter(sParam) {
                 var sPageURL = window.location.search.substring(1),
@@ -51,7 +60,7 @@
             }).addTo(map);
 
             $.getJSON(geoJSONSourceUrl, function (data) {
-
+                const boundingBox = turf.bbox.default(data); //todo - clean up module export
                 L.geoJSON(data, {
                     style: function (feature) {
                         return { color: "#00FF00" };
@@ -59,8 +68,15 @@
                 }).bindPopup(function (layer) {
                     return layer.feature.properties.notes;
                 }).addTo(map);
+
+                map.fitBounds([
+                    [boundingBox[1], boundingBox[0]],
+                    [boundingBox[3], boundingBox[2]]
+                    ]);
             });
 
+
+            // getBoundingBox();
 
 
 
