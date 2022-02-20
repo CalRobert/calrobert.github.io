@@ -54,7 +54,7 @@
                 const boundingBox = turf.bbox.default(data); //todo - clean up module export
                 L.geoJSON(data, {
                     style: function (feature) {
-                        return { color: "#00FF00" };
+                        return { color: "#0033FF" };
                     }
                 }).bindPopup(function (layer) {
                     return layer.feature.properties.notes;
