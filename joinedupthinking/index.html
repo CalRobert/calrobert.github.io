@@ -71,7 +71,6 @@
                 const sourceUrls = await getGeoJSONSources();
 
                 for(const geoJSONSourceUrl of sourceUrls) {
-                // await sourceUrls.forEach(async geoJSONSourceUrl => {
                     await $.getJSON(geoJSONSourceUrl, function (data) {
                     const boundingBox = turf.bbox.default(data); //todo - clean up module export
                     allBounds.push(boundingBox);
@@ -88,8 +87,6 @@
                             "<a href='" + layer.feature.properties.url + "'>" + layer.feature.properties.url + "</a>":
                             ''
                         }
-
-
                         `;
                     }).addTo(map);
 
