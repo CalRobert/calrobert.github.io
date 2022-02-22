@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <style>
+            body {
+                margin:0
+            }
+        </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="/outTurf.js"></script>
+
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    </head>
+    <body>
+        <div id="map" style="width:100vw; height:100vh">
+
+        </div>
+
+        <script>
+
+            const getGeoJSONSources = () => {
+                // TODO: Pull this from GH
+                return [
+                    'https://gist.githubusercontent.com/CalRobert/60096f162de717316226261069304205/raw/388b1b5da5e8ef15361a04226fee872b7b30d208/shannon_monastic_greenway.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/e4a9db30fef460174df032e5205f711a/raw/f67851f55dd53d74a13505dc7528219430646989/kilbeggan_mullingar_greenway.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/8bb570ffff6aecfcb0bb8388a0637a34/raw/080aefc7be5087f108ec8d7023090ecc60512174/clara_river_walk.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/edd02cb4d8edf5e00fd851ce1d30d9aa/raw/fd2606558f0a9ee53cdfc2fd2ee0059e19eb2c6d/clara_trails.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/e9a978076f9591fbd10f2e8a13de395d/raw/01c402e5600448d6e53aa0957ad5670224c34050/rahan_blueway.geojson'
+
+                ];
+            };
+
+            const getGlobalBoundingBox = allBounds => {
+
+                const minLat = Math.min(...allBounds.map(a=>a[1]));
+                const minLng = Math.min(...allBounds.map(a=>a[0]));
+                const maxLat = Math.max(...allBounds.map(a=>a[3]));
+                const maxLng = Math.max(...allBounds.map(a=>a[2]));
+
+                return [
+                    [minLat, minLng],
+                    [maxLat, maxLng]
+                ]
+            }
+
+            const map = L.map('map').setView([53.005, -8.09], 10);
+
+            // Need to change this out for all but trivial traffic
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+                attribution: '&copy; Tiles style by <a href="https://www.cyclosm.org/">CyclOSM</a> hosted by OpenStreetMap France.'
+            }).addTo(map);
+
+
+            const allBounds = [];
+
+
+            const populateMap = async() => {
+                const sourceUrls = await getGeoJSONSources();
+
+                for(const geoJSONSourceUrl of sourceUrls) {
+                    await $.getJSON(geoJSONSourceUrl, function (data) {
+                    const boundingBox = turf.bbox.default(data); //todo - clean up module export
+                    allBounds.push(boundingBox);
+                    L.geoJSON(data, {
+                        style: function (feature) {
+                            return { color: "#FF0000" };
+                        }
+                    }).bindPopup(function (layer) {
+                        return `
+                        ${layer.feature.properties.name ? layer.feature.properties.name: ''}
+                        ${layer.feature.properties.status ? layer.feature.properties.status: ''}
+                        ${layer.feature.properties.notes ? layer.feature.properties.notes: ''}
+                        ${layer.feature.properties.url ?
+                            "<a href='" + layer.feature.properties.url + "'>" + layer.feature.properties.url + "</a>":
+                            ''
+                        }
+                        `;
+                    }).addTo(map);
+
+
+                    });
+                };
+                const bounds = getGlobalBoundingBox(allBounds);
+                map.fitBounds(bounds);
+
+
+
+        };
+        populateMap();
+
+
+
+        </script>
+    </body>
+</html>
+
