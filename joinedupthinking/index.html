@@ -76,7 +76,7 @@
                     allBounds.push(boundingBox);
                     L.geoJSON(data, {
                         style: function (feature) {
-                            return { color: "#FF0000" };
+                            return { color: "#FF0000", weight:10 };
                         }
                     }).bindPopup(function (layer) {
                         return `
