@@ -12,6 +12,8 @@
         <script src="/outTurf.js"></script>
 
 
+
+
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
         integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
         crossorigin=""/>
@@ -19,6 +21,8 @@
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin=""></script>
+        <!-- https://github.com/Raruto/leaflet-kmz -->
+        <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
     </head>
     <body>
         <div id="map" style="width:100vw; height:100vh">
@@ -26,6 +30,8 @@
         </div>
 
         <script>
+            const map = L.map('map').setView([53.005, -8.09], 10);
+            const control = L.control.layers(null, null, { collapsed:false }).addTo(map);
 
             const getGeoJSONSources = () => {
                 // TODO: Pull this from GH
@@ -41,6 +47,19 @@
                 ];
             };
 
+            // todo - just use omnivore. Eventually need to handle a zillion network requests.
+            // Lazy load?
+            const getKMZSources = () => {
+                return [
+                    // https://www.google.com/maps/d/viewer?mid=1HAHB3jpXV7qgrTHgopH4Zl7-ItDHGEPv&ll=52.99447963637977%2C-8.435949029407961&z=5
+                    '/rawgmapdata/GreenwayMapIreland.kmz',
+
+                    // https://www.google.com/maps/d/u/3/viewer?ll=53.34791355009671%2C-6.273853535748568&z=13&mid=1vJEShhl683p69BnnjZdmNgHfmqnaOBRS
+                    // which is for projects at https://trello.com/b/dps7lepq/infrastructure-projects
+                    '/rawgmapdata/DublinCycleInfra.kmz'
+                ]
+            };
+
             const getGlobalBoundingBox = allBounds => {
 
                 const minLat = Math.min(...allBounds.map(a=>a[1]));
@@ -54,20 +73,20 @@
                 ]
             }
 
-            const map = L.map('map').setView([53.005, -8.09], 10);
+
 
             // Need to change this out for all but trivial traffic
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+            const existingCycle = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
                 attribution: '&copy; Tiles style by <a href="https://www.cyclosm.org/">CyclOSM</a> hosted by OpenStreetMap France.'
             }).addTo(map);
 
+            control.addOverlay(existingCycle, "OpenCycleMap (existing infra)");
 
             const allBounds = [];
-
 
             const populateMap = async() => {
                 const sourceUrls = await getGeoJSONSources();
@@ -76,7 +95,7 @@
                     await $.getJSON(geoJSONSourceUrl, function (data) {
                     const boundingBox = turf.bbox.default(data); //todo - clean up module export
                     allBounds.push(boundingBox);
-                    L.geoJSON(data, {
+                    const layer = L.geoJSON(data, {
                         style: function (feature) {
                             return { color: "#FF0000", weight:10 };
                         }
@@ -92,9 +111,27 @@
                         `;
                     }).addTo(map);
 
+                    control.addOverlay(layer, data.features[0].properties.name); // hack
+
 
                     });
                 };
+
+
+
+                const kmz = L.kmzLayer().addTo(map);
+                kmz.on('load', function(e) {
+                    control.addOverlay(e.layer, e.name);
+                    e.layer.addTo(map);
+                });
+
+                for(const kmzUrl of getKMZSources()){
+                    kmz.load(kmzUrl);
+
+                };
+
+
+
                 const bounds = getGlobalBoundingBox(allBounds);
                 map.fitBounds(bounds);
 
