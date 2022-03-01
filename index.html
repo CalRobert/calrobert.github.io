@@ -1,54 +1,149 @@
-<DOCTYPE html>
-	<html>
-	<head>
-
-			<script
-			  src="https://code.jquery.com/jquery-3.6.0.min.js"
-			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-			  crossorigin="anonymous"></script>
-
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-   crossorigin=""/>
-
-    <!-- Make sure you put this AFTER Leaflet's CSS -->
- <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-   crossorigin=""></script>
-	</head>
-	<body>
-		<div id="map" style="width:1000px; height:800px">
-			</div>
-
-
-			<script>
-				console.log("running");
-				var map = L.map('map').setView([53.2, -7.5], 13);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-L.marker([53.2, -7.5]).addTo(map)
-    .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-    .openPopup();
-
-
-$.getJSON("https://gist.githubusercontent.com/CalRobert/edd02cb4d8edf5e00fd851ce1d30d9aa/raw/3f4f3018e3d298dd000e25abad3b5dfec0a3c39a/map.geojson", function(data) {
-
-        L.geoJSON(data, {
-    style: function (feature) {
-        return {color: "#00FF00"};
-    }
-}).bindPopup(function (layer) {
-    return layer.feature.properties.notes;
-}).addTo(map);
-});
+<!DOCTYPE html>
+<!-- The homepage for joinedupthinking.ie -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <style>
+            body {
+                margin:0
+            }
+        </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="/assets/outTurf.js"></script>
 
 
 
 
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
 
-</script>
-	</body>
-	</html>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+        <!-- https://github.com/Raruto/leaflet-kmz -->
+        <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
+    </head>
+    <body>
+        <div id="map" style="width:100vw; height:100vh">
+
+        </div>
+
+        <script>
+            const map = L.map('map').setView([53.005, -8.09], 10);
+            const control = L.control.layers(null, null, { collapsed:false }).addTo(map);
+
+            const getGeoJSONSources = () => {
+                // TODO: Pull this from GH
+                return [
+                    'https://gist.githubusercontent.com/CalRobert/60096f162de717316226261069304205/raw/shannon_monastic_greenway.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/e4a9db30fef460174df032e5205f711a/raw/kilbeggan_mullingar_greenway.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/8bb570ffff6aecfcb0bb8388a0637a34/raw/clara_river_walk.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/edd02cb4d8edf5e00fd851ce1d30d9aa/raw/clara_trails.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/e9a978076f9591fbd10f2e8a13de395d/raw/rahan_blueway.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/eb27fd4ce7ff1ae08c75cfc31d2b2f3b/raw/clara_bog_brownway.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/152462822b15fa3b3c9117cb3ed20b45/raw/rahan_pollough.geojson'
+
+                ];
+            };
+
+            // todo - just use omnivore. Eventually need to handle a zillion network requests.
+            // Lazy load?
+            const getKMZSources = () => {
+                return [
+                    // https://www.google.com/maps/d/viewer?mid=1HAHB3jpXV7qgrTHgopH4Zl7-ItDHGEPv&ll=52.99447963637977%2C-8.435949029407961&z=5
+                    '/rawgmapdata/GreenwayMapIreland.kmz',
+
+                    // https://www.google.com/maps/d/u/3/viewer?ll=53.34791355009671%2C-6.273853535748568&z=13&mid=1vJEShhl683p69BnnjZdmNgHfmqnaOBRS
+                    // which is for projects at https://trello.com/b/dps7lepq/infrastructure-projects
+                    '/rawgmapdata/DublinCycleInfra.kmz'
+                ]
+            };
+
+            const getGlobalBoundingBox = allBounds => {
+
+                const minLat = Math.min(...allBounds.map(a=>a[1]));
+                const minLng = Math.min(...allBounds.map(a=>a[0]));
+                const maxLat = Math.max(...allBounds.map(a=>a[3]));
+                const maxLng = Math.max(...allBounds.map(a=>a[2]));
+
+                return [
+                    [minLat, minLng],
+                    [maxLat, maxLng]
+                ]
+            }
+
+
+
+            // Need to change this out for all but trivial traffic
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            const existingCycle = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+                attribution: '&copy; Tiles style by <a href="https://www.cyclosm.org/">CyclOSM</a> hosted by OpenStreetMap France.'
+            }).addTo(map);
+
+            control.addOverlay(existingCycle, "OpenCycleMap (existing infra)");
+
+            const allBounds = [];
+
+            const populateMap = async() => {
+                const sourceUrls = await getGeoJSONSources();
+
+                for(const geoJSONSourceUrl of sourceUrls) {
+                    await $.getJSON(geoJSONSourceUrl, function (data) {
+                    const boundingBox = turf.bbox.default(data); //todo - clean up module export
+                    allBounds.push(boundingBox);
+                    const layer = L.geoJSON(data, {
+                        style: function (feature) {
+                            return { color: "#FF0000", weight:10 };
+                        }
+                    }).bindPopup(function (layer) {
+                        return `
+                        ${layer.feature.properties.name ? layer.feature.properties.name: ''}
+                        ${layer.feature.properties.status ? layer.feature.properties.status: ''}
+                        ${layer.feature.properties.notes ? layer.feature.properties.notes: ''}
+                        ${layer.feature.properties.url ?
+                            "<a href='" + layer.feature.properties.url + "'>" + layer.feature.properties.url + "</a>":
+                            ''
+                        }
+                        `;
+                    }).addTo(map);
+
+                    control.addOverlay(layer, data.features[0].properties.name); // hack
+
+
+                    });
+                };
+
+
+
+                const kmz = L.kmzLayer().addTo(map);
+                kmz.on('load', function(e) {
+                    control.addOverlay(e.layer, e.name);
+                    e.layer.addTo(map);
+                });
+
+                for(const kmzUrl of getKMZSources()){
+                    kmz.load(kmzUrl);
+
+                };
+
+
+
+                const bounds = getGlobalBoundingBox(allBounds);
+                map.fitBounds(bounds);
+
+
+
+        };
+        populateMap();
+
+
+
+        </script>
+    </body>
+</html>
+
