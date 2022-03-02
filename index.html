@@ -112,7 +112,7 @@
                         style: function (feature) {
                             return { color: "#FF0000", weight:10 };
                         }
-                    }).bindPopup(function (layer) {
+                    }).bindPopup(function (layer) { // tudo - don't use name "layer" here....
                         return `
                         ${layer.feature.properties.name ? layer.feature.properties.name: ''}
                         ${layer.feature.properties.status ? layer.feature.properties.status: ''}
@@ -124,7 +124,12 @@
                         `;
                     }).addTo(map);
 
-                    control.addOverlay(layer, data.features[0].properties.name); // hack
+                    control.addOverlay(layer,
+                    data.features[0].properties.url ?
+                        "<a target=\"_blank\"  href='" + data.features[0].properties.url + "'>" + data.features[0].properties.name + "</a>":
+                        data.features[0].properties.name
+
+                    ); // hack
 
                     });
                 };
