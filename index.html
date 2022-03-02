@@ -133,8 +133,7 @@
 
                 const kmz = L.kmzLayer().addTo(map);
                 kmz.on('load', function(e) {
-                    control.addOverlay(e.layer, "dummy"
-                    // `<a href="${e.props.options.url}" target="_blank">${e.props.options.name}</a>`
+                    control.addOverlay(e.layer, `<a href="${e.props.options.url}" target="_blank">${e.props.options.name}</a>`
                     );
                     e.layer.addTo(map);
                 });
