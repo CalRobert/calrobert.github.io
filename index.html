@@ -23,7 +23,8 @@
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin=""></script>
         <!-- https://github.com/Raruto/leaflet-kmz -->
-        <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
+        <!-- <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script> -->
+        <script src="/assets/leaflet-kmz.js"></script> <!-- needed some local mods to give credit-->
     </head>
     <body>
         <div id="map" style="width:100vw; height:100vh">
@@ -35,7 +36,8 @@
             const control = L.control.layers(null, null, { collapsed:false }).addTo(map);
 
             const getGeoJSONSources = () => {
-                // TODO: Pull this from GH
+                // Need to make up my mind about whether these gists need to be FeatureCollections or just Features.
+                // FeatureCollections at the moment
                 return [
                     'https://gist.githubusercontent.com/CalRobert/60096f162de717316226261069304205/raw/shannon_monastic_greenway.geojson',
                     'https://gist.githubusercontent.com/CalRobert/e4a9db30fef460174df032e5205f711a/raw/kilbeggan_mullingar_greenway.geojson',
@@ -53,11 +55,21 @@
             const getKMZSources = () => {
                 return [
                     // https://www.google.com/maps/d/viewer?mid=1HAHB3jpXV7qgrTHgopH4Zl7-ItDHGEPv&ll=52.99447963637977%2C-8.435949029407961&z=5
-                    '/rawgmapdata/GreenwayMapIreland.kmz',
+                    {
+                        "name": "Possible and completed Greenways",
+                        "url": "https://www.google.com/maps/d/viewer?mid=1HAHB3jpXV7qgrTHgopH4Zl7-ItDHGEPv&ll=52.99447963637977%2C-8.435949029407961&z=5",
+                        "localUrl": '/rawgmapdata/GreenwayMapIreland.kmz'
+                    },
+                    {
+                        "name": "Dublin Bike Project Tracker",
+                        "url": "https://www.google.com/maps/d/u/3/viewer?ll=53.347913550096685%2C-6.273853535748568&z=13&mid=1vJEShhl683p69BnnjZdmNgHfmqnaOBRS",
+                        "localUrl": "/rawgmapdata/DublinCycleInfra.kmz"
+                    }
+
 
                     // https://www.google.com/maps/d/u/3/viewer?ll=53.34791355009671%2C-6.273853535748568&z=13&mid=1vJEShhl683p69BnnjZdmNgHfmqnaOBRS
                     // which is for projects at https://trello.com/b/dps7lepq/infrastructure-projects
-                    '/rawgmapdata/DublinCycleInfra.kmz'
+
                 ]
             };
 
@@ -114,7 +126,6 @@
 
                     control.addOverlay(layer, data.features[0].properties.name); // hack
 
-
                     });
                 };
 
@@ -122,16 +133,17 @@
 
                 const kmz = L.kmzLayer().addTo(map);
                 kmz.on('load', function(e) {
-                    control.addOverlay(e.layer, e.name);
+                    control.addOverlay(e.layer, "dummy"
+                    // `<a href="${e.props.options.url}" target="_blank">${e.props.options.name}</a>`
+                    );
                     e.layer.addTo(map);
                 });
 
-                for(const kmzUrl of getKMZSources()){
-                    kmz.load(kmzUrl);
-
+                for(const kmzLayer of getKMZSources()){
+                    kmz.load(kmzLayer["localUrl"]
+                    // , kmzLayer
+                    );
                 };
-
-
 
                 const bounds = getGlobalBoundingBox(allBounds);
                 map.fitBounds(bounds);
