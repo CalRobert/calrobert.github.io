@@ -73,17 +73,20 @@
                     {
                         "name": "Potential Greenways - active right of way",
                         "url": "https://www.google.com/maps/d/viewer?mid=1HAHB3jpXV7qgrTHgopH4Zl7-ItDHGEPv&ll=52.99447963637977%2C-8.435949029407961&z=5",
-                        "localUrl": '/rawgmapdata/greenwaymap/PotentialActiveRailwayTrails.kmz'
+                        "localUrl": '/rawgmapdata/greenwaymap/PotentialActiveRailwayTrails.kmz',
+                        "offByDefault": true
                     },
                     {
                         "name": "Potential Greenways - inactive historic rail route",
                         "url": "https://www.google.com/maps/d/viewer?mid=1HAHB3jpXV7qgrTHgopH4Zl7-ItDHGEPv&ll=52.99447963637977%2C-8.435949029407961&z=5",
-                        "localUrl": '/rawgmapdata/greenwaymap/Potential.kmz'
+                        "localUrl": '/rawgmapdata/greenwaymap/Potential.kmz',
+                        "offByDefault": true
                     },
                     {
                         "name": "Proposed Greenways",
                         "url": "https://www.google.com/maps/d/viewer?mid=1HAHB3jpXV7qgrTHgopH4Zl7-ItDHGEPv&ll=52.99447963637977%2C-8.435949029407961&z=5",
-                        "localUrl": '/rawgmapdata/greenwaymap/Proposed.kmz'
+                        "localUrl": '/rawgmapdata/greenwaymap/Proposed.kmz',
+                        "offByDefault": true
                     },
                     {
                         "name": "Dublin Bike Project Tracker",
@@ -137,7 +140,7 @@
                         style: function (feature) {
                             return { color: "#FF0000", weight:10 };
                         }
-                    }).bindPopup(function (layer) { // tudo - don't use name "layer" here....
+                    }).bindPopup(function (layer) { // todo - don't use name "layer" here....
                         return `
                         ${layer.feature.properties.name ? layer.feature.properties.name: ''}
                         ${layer.feature.properties.status ? layer.feature.properties.status: ''}
@@ -165,7 +168,10 @@
                 kmz.on('load', function(e) {
                     control.addOverlay(e.layer, `<a href="${e.props.options.url}" target="_blank">${e.props.options.name}</a>`
                     );
-                    e.layer.addTo(map);
+                    if (!(e.props.options.offBeDefault === true)){
+                        e.layer.addTo(map);
+                    }
+
                 });
 
                 for(const kmzLayer of getKMZSources()){
