@@ -168,7 +168,7 @@
                 kmz.on('load', function(e) {
                     control.addOverlay(e.layer, `<a href="${e.props.options.url}" target="_blank">${e.props.options.name}</a>`
                     );
-                    if (!(e.props.options.offBeDefault === true)){
+                    if (!(e.props.options.offByDefault === true)){
                         e.layer.addTo(map);
                     }
 
