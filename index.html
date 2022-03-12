@@ -164,7 +164,7 @@
 
 
 
-                const kmz = L.kmzLayer().addTo(map);
+                const kmz = L.kmzLayer();
                 kmz.on('load', function(e) {
                     control.addOverlay(e.layer, `<a href="${e.props.options.url}" target="_blank">${e.props.options.name}</a>`
                     );
