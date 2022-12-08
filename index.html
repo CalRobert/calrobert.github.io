@@ -7,6 +7,38 @@
             body {
                 margin:0
             }
+
+
+            .map-overlay {
+                /*background-color: #ddd;*/
+                background-color: #411640;
+                color: #FFF;
+                opacity:0.95;
+                position: absolute;
+                z-index: 10002;
+            }
+
+
+            #loader {
+                /*border: 16px solid #411640; /* Light grey */
+                border: 16px solid #f3f3f3;
+                border-top: 16px solid #3498db; /* Blue */
+                border-radius: 50%;
+                width: 120px;
+                height: 120px;
+                margin: -75px 0 0 -75px;
+                -webkit-animation: spin 2s linear infinite;
+                animation: spin 2s linear infinite;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                z-index:10001;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
         </style>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -30,6 +62,8 @@
         <div id="map" style="width:100vw; height:100vh">
 
         </div>
+        <div id="loader" class="map-overlay"></div>
+
 
         <script>
             const map = L.map('map').setView([53.005, -8.09], 10);
@@ -39,15 +73,16 @@
                 // Need to make up my mind about whether these gists need to be FeatureCollections or just Features.
                 // FeatureCollections at the moment
                 return [
-                    'https://gist.githubusercontent.com/CalRobert/db78549f28ecf8fb976843346f87e1b5/raw/cycleconnects_low_res.geojson',
-                    'https://gist.githubusercontent.com/CalRobert/f997be5202f5fdec04874a74345518b3/raw/tullamore.geojson',
-                    'https://gist.githubusercontent.com/CalRobert/60096f162de717316226261069304205/raw/shannon_monastic_greenway.geojson',
+
+                    // 'https://gist.githubusercontent.com/CalRobert/f997be5202f5fdec04874a74345518b3/raw/tullamore.geojson',
+                    // 'https://gist.githubusercontent.com/CalRobert/60096f162de717316226261069304205/raw/shannon_monastic_greenway.geojson',
                     'https://gist.githubusercontent.com/CalRobert/e4a9db30fef460174df032e5205f711a/raw/kilbeggan_mullingar_greenway.geojson',
                     'https://gist.githubusercontent.com/CalRobert/8bb570ffff6aecfcb0bb8388a0637a34/raw/clara_river_walk.geojson',
                     'https://gist.githubusercontent.com/CalRobert/edd02cb4d8edf5e00fd851ce1d30d9aa/raw/clara_trails.geojson',
                     'https://gist.githubusercontent.com/CalRobert/e9a978076f9591fbd10f2e8a13de395d/raw/rahan_blueway.geojson',
                     'https://gist.githubusercontent.com/CalRobert/eb27fd4ce7ff1ae08c75cfc31d2b2f3b/raw/clara_bog_brownway.geojson',
-                    'https://gist.githubusercontent.com/CalRobert/152462822b15fa3b3c9117cb3ed20b45/raw/rahan_pollough.geojson'
+                    'https://gist.githubusercontent.com/CalRobert/152462822b15fa3b3c9117cb3ed20b45/raw/rahan_pollough.geojson',
+                    'https://gist.githubusercontent.com/CalRobert/db78549f28ecf8fb976843346f87e1b5/raw/cycleconnects_low_res.geojson',
 
                 ];
             };
@@ -184,6 +219,8 @@
                 const bounds = getGlobalBoundingBox(allBounds);
                 map.fitBounds(bounds);
 
+                // Super ugly but at least it provides some feedback
+                document.getElementById("loader").hidden = true;
 
 
         };
